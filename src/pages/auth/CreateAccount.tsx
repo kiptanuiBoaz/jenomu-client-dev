@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import MenuItem from '@mui/material/MenuItem';
+import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
 
 const CreateAccount = () => {
     const [formData, setFormData] = useState({
@@ -23,6 +24,14 @@ const CreateAccount = () => {
         password: '',
         confirmPassword: '',
     });
+    const [value, setValue] = React.useState('+1 647')
+
+    const handlePhoneNoChange = (newValue: string) => {
+        setValue(newValue)
+        // true | false
+    }
+
+
 
     const handleChange = (e: any) => {
         const { name, value } = e.target;
@@ -98,17 +107,15 @@ const CreateAccount = () => {
                             </TextField>
                         </Grid>
                         <Grid item xs={12}>
-                            <TextField
-                                required
+                            <MuiTelInput
+                                placeholder='Phone Number'
                                 fullWidth
-                                id="phoneNumber"
-                                label="Phone Number (with country code)"
-                                name="phoneNumber"
-                                autoComplete="tel"
-                                value={formData.phoneNumber}
-                                onChange={handleChange}
+                                value={value}
+                                defaultCountry='CA'
+                                onChange={handlePhoneNoChange}
                             />
                         </Grid>
+
                         <Grid item xs={12}>
                             <TextField
                                 required
@@ -164,7 +171,7 @@ const CreateAccount = () => {
                     </Button>
                     <Grid container justifyContent="flex-end">
                         <Grid item>
-                            <Link href="#" variant="body2">
+                            <Link href="/login" variant="body2">
                                 Already have an account
 
                             </Link>
