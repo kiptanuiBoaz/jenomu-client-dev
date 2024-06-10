@@ -10,13 +10,13 @@ const Login = () => {
         password: '',
     });
 
-    // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     const { name, value } = e.target;
-    //     setFormData({
-    //         ...formData,
-    //         [name]: value,
-    //     });
-    // };
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -73,6 +73,7 @@ const Login = () => {
                             name="email"
                             autoComplete="email"
                             autoFocus
+                            onChange={handleChange}
                         />
                         <TextField
                             margin="normal"
