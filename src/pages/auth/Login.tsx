@@ -1,6 +1,4 @@
-import { useDispatch } from 'react-redux';
-import { login } from '../../redux/slices/authSlice';
-import { Role } from '../../types/auth.types';
+
 import { Avatar, Box, Button, Checkbox, Container, CssBaseline, FormControlLabel, Grid, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -12,39 +10,39 @@ const Login = () => {
         password: '',
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
+    // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const { name, value } = e.target;
+    //     setFormData({
+    //         ...formData,
+    //         [name]: value,
+    //     });
+    // };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // Add form submission logic here
         console.log(formData);
     };
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();/
+    // 
+    // const handleLogin = (role: Role) => {
+    //     dispatch(login({ role }));
+    // };
 
-    const handleLogin = (role: Role) => {
-        dispatch(login({ role }));
-    };
+    // const Adminrole = {
+    //     id: 'admin',
+    //     Permissions: []
+    // }
 
-    const Adminrole = {
-        id: 'admin',
-        Permissions: []
-    }
+    // const Researcherrole = {
+    //     id: 'researcher',
+    //     Permissions: []
+    // }
 
-    const Researcherrole = {
-        id: 'researcher',
-        Permissions: []
-    }
-
-    const Freelancerrole = {
-        id: 'freelancer',
-        Permissions: []
-    }
+    // const Freelancerrole = {
+    //     id: 'freelancer',
+    //     Permissions: []
+    // }
 
     return (
         <div>
