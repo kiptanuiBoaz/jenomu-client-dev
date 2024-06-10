@@ -15,7 +15,6 @@ const initialUserState: User = {
     phone_no: "",
     avatar: null,
     recycled: "",
-    farmer: null,
     role: {
         id: "",
         Permissions: []
