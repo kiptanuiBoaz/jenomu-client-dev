@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
-const ResetPasswordForm = () => {
+const ResetPassword = () => {
     const navigate = useNavigate();
 
     const validationSchema = Yup.object({
@@ -70,4 +70,4 @@ const ResetPasswordForm = () => {
     );
 };
 
-export default ResetPasswordForm;
+export default ResetPassword;

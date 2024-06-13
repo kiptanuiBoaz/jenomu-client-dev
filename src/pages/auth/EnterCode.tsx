@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
-const EnterCodeForm = () => {
+const EnterCode = () => {
     const navigate = useNavigate();
 
     const validationSchema = Yup.object({
@@ -72,4 +72,4 @@ const EnterCodeForm = () => {
     );
 };
 
-export default EnterCodeForm;
+export default EnterCode;
