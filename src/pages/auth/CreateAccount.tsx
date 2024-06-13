@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,39 +13,40 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import MenuItem from '@mui/material/MenuItem';
 import { MuiTelInput } from 'mui-tel-input';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const CreateAccount = () => {
-    const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        role: 'freelancer',
-        phoneNumber: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
+    // Yup validation schema
+    const validationSchema = Yup.object({
+        firstName: Yup.string().required('First Name is required'),
+        lastName: Yup.string().required('Last Name is required'),
+        role: Yup.string().required('Role is required'),
+        phoneNumber: Yup.string().required('Phone Number is required'),
+        email: Yup.string().email('Invalid email address').required('Email is required'),
+        password: Yup.string().required('Password is required'),
+        confirmPassword: Yup.string()
+            .oneOf([Yup.ref('password'),], 'Passwords must match')
+            .required('Confirm Password is required'),
     });
-    const [value, setValue] = React.useState('+1 647')
 
-    const handlePhoneNoChange = (newValue: string) => {
-        setValue(newValue)
-        // true | false
-    }
-
-
-
-    const handleChange = (e: any) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        // Add form submission logic here
-        console.log(formData);
-    };
+    // Formik setup
+    const formik = useFormik({
+        initialValues: {
+            firstName: '',
+            lastName: '',
+            role: 'freelancer',
+            phoneNumber: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+        },
+        validationSchema: validationSchema,
+        onSubmit: (values) => {
+            // Add form submission logic here
+            console.log(values);
+        },
+    });
 
     return (
         <Container component="main" maxWidth="xs">
@@ -64,7 +65,7 @@ const CreateAccount = () => {
                 <Typography component="h1" variant="h5">
                     Sign up
                 </Typography>
-                <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                <Box component="form" noValidate onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -75,8 +76,11 @@ const CreateAccount = () => {
                                 id="firstName"
                                 label="First Name"
                                 autoFocus
-                                value={formData.firstName}
-                                onChange={handleChange}
+                                value={formik.values.firstName}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+                                helperText={formik.touched.firstName && formik.errors.firstName}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -87,8 +91,11 @@ const CreateAccount = () => {
                                 label="Last Name"
                                 name="lastName"
                                 autoComplete="family-name"
-                                value={formData.lastName}
-                                onChange={handleChange}
+                                value={formik.values.lastName}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+                                helperText={formik.touched.lastName && formik.errors.lastName}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -99,8 +106,11 @@ const CreateAccount = () => {
                                 id="role"
                                 label="Role"
                                 name="role"
-                                value={formData.role}
-                                onChange={handleChange}
+                                value={formik.values.role}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.role && Boolean(formik.errors.role)}
+                                helperText={formik.touched.role && formik.errors.role}
                             >
                                 <MenuItem value="freelancer">Freelancer</MenuItem>
                                 <MenuItem value="researcher">Researcher</MenuItem>
@@ -110,12 +120,15 @@ const CreateAccount = () => {
                             <MuiTelInput
                                 placeholder='Phone Number'
                                 fullWidth
-                                value={value}
+                                name="phoneNumber"
+                                value={formik.values.phoneNumber}
+                                onChange={(newValue) => formik.setFieldValue('phoneNumber', newValue)}
+                                onBlur={formik.handleBlur}
                                 defaultCountry='CA'
-                                onChange={handlePhoneNoChange}
+                                error={formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)}
+                                helperText={formik.touched.phoneNumber && formik.errors.phoneNumber}
                             />
                         </Grid>
-
                         <Grid item xs={12}>
                             <TextField
                                 required
@@ -124,8 +137,11 @@ const CreateAccount = () => {
                                 label="Email Address"
                                 name="email"
                                 autoComplete="email"
-                                value={formData.email}
-                                onChange={handleChange}
+                                value={formik.values.email}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.email && Boolean(formik.errors.email)}
+                                helperText={formik.touched.email && formik.errors.email}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -137,8 +153,11 @@ const CreateAccount = () => {
                                 type="password"
                                 id="password"
                                 autoComplete="new-password"
-                                value={formData.password}
-                                onChange={handleChange}
+                                value={formik.values.password}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.password && Boolean(formik.errors.password)}
+                                helperText={formik.touched.password && formik.errors.password}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -150,8 +169,11 @@ const CreateAccount = () => {
                                 type="password"
                                 id="confirmPassword"
                                 autoComplete="new-password"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
+                                value={formik.values.confirmPassword}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
+                                helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -162,6 +184,7 @@ const CreateAccount = () => {
                         </Grid>
                     </Grid>
                     <Button
+
                         type="submit"
                         fullWidth
                         variant="contained"
@@ -172,8 +195,7 @@ const CreateAccount = () => {
                     <Grid container justifyContent="flex-end">
                         <Grid item>
                             <Link href="/login" variant="body2">
-                                Already have an account
-
+                                Already have an account? Sign in
                             </Link>
                         </Grid>
                     </Grid>
@@ -181,5 +203,6 @@ const CreateAccount = () => {
             </Box>
         </Container>
     );
-}
+};
+
 export default CreateAccount;

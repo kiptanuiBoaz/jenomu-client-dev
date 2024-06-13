@@ -1,52 +1,36 @@
-
-import { Avatar, Box, Button, Checkbox, Container, CssBaseline, FormControlLabel, Grid, TextField, Typography } from '@mui/material';
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { Avatar, Box, Button, Checkbox, Container, CssBaseline, FormControlLabel, Grid, Link, TextField, Typography } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const Login = () => {
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
+    const location = useLocation();
+    const navigate = useNavigate();
+    console.log(location);
+
+    // Yup validation schema
+    const validationSchema = Yup.object({
+        email: Yup.string().email('Invalid email address').required('Email is required'),
+        password: Yup.string().required('Password is required'),
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        // Add form submission logic here
-        console.log(formData);
-    };
-    // const dispatch = useDispatch();/
-    // 
-    // const handleLogin = (role: Role) => {
-    //     dispatch(login({ role }));
-    // };
-
-    // const Adminrole = {
-    //     id: 'admin',
-    //     Permissions: []
-    // }
-
-    // const Researcherrole = {
-    //     id: 'researcher',
-    //     Permissions: []
-    // }
-
-    // const Freelancerrole = {
-    //     id: 'freelancer',
-    //     Permissions: []
-    // }
+    // Formik setup
+    const formik = useFormik({
+        initialValues: {
+            email: '',
+            password: '',
+        },
+        validationSchema: validationSchema,
+        onSubmit: (values) => {
+            // Add form submission logic here
+            console.log(values);
+        },
+    });
 
     return (
         <div>
-
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
                 <Box
@@ -63,7 +47,7 @@ const Login = () => {
                     <Typography component="h1" variant="h5">
                         Login
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                    <Box component="form" onSubmit={formik.handleSubmit} noValidate sx={{ mt: 1 }}>
                         <TextField
                             margin="normal"
                             required
@@ -73,7 +57,11 @@ const Login = () => {
                             name="email"
                             autoComplete="email"
                             autoFocus
-                            onChange={handleChange}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.email}
+                            error={formik.touched.email && Boolean(formik.errors.email)}
+                            helperText={formik.touched.email && formik.errors.email}
                         />
                         <TextField
                             margin="normal"
@@ -84,6 +72,11 @@ const Login = () => {
                             type="password"
                             id="password"
                             autoComplete="current-password"
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.password}
+                            error={formik.touched.password && Boolean(formik.errors.password)}
+                            helperText={formik.touched.password && formik.errors.password}
                         />
                         <FormControlLabel
                             control={<Checkbox value="remember" color="primary" />}
@@ -99,19 +92,18 @@ const Login = () => {
                         </Button>
                         <Grid container>
                             <Grid item xs>
-                                <Link to="#"  >
+                                <Link variant="body2" href="/reset-password" >
                                     Forgot password?
                                 </Link>
                             </Grid>
-                            <Grid item>
-                                <Link to="/create-account" >
-                                    {"Don't have an account? Sign Up"}
+                            <Grid item> Don't have an account?
+                                <Link variant="body2" href="/create-account" >
+                                    {" Sign Up"}
                                 </Link>
                             </Grid>
                         </Grid>
                     </Box>
                 </Box>
-
             </Container>
         </div>
     );

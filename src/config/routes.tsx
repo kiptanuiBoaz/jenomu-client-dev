@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Login from '../pages/auth/Login';
 import UnauthorizedPage from '../pages/Unauthorized';
 import JobList from '../pages/freelancer/JobList';
 import JobDetails from '../pages/freelancer/JobDetails';
@@ -9,6 +8,10 @@ import ResearcherDashboard from '../pages/researcher/ReseracherDashboard';
 import PostJob from '../pages/researcher/PostJob';
 import AdminDashboard from '../pages/admin/AdminDashborad';
 import CreateAccount from '../pages/auth/CreateAccount';
+import Login from '../pages/auth/Login';
+import EnterCodeForm from '../pages/auth/EnterCode';
+import SetNewPassword from '../pages/auth/SetNewPassword';
+import ResetPasswordForm from '../pages/auth/ResetPassword';
 
 
 const AppRoutes = () => {
@@ -18,6 +21,9 @@ const AppRoutes = () => {
                 {/* Public Routes */}
                 <Route index path="/" element={< JobList />} />
                 < Route path="/login" element={< Login />} />
+                < Route path="/enter-code" element={< EnterCodeForm />} />
+                < Route path="/set-new-password" element={< SetNewPassword />} />
+                < Route path="/reset-password" element={< ResetPasswordForm />} />
                 <Route path="/create-account" element={< CreateAccount />} />
                 < Route path="/unauthorized" element={< UnauthorizedPage />} />
 
