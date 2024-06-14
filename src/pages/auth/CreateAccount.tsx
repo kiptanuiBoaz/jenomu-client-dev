@@ -14,7 +14,8 @@ import MenuItem from '@mui/material/MenuItem';
 import { MuiTelInput } from 'mui-tel-input';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { basePost } from '../../utils/apiClient';
+import { baseGet, basePost } from '../../utils/apiClient';
+import { useEffect } from 'react';
 
 const CreateAccount = () => {
     // Yup validation schema
@@ -29,6 +30,22 @@ const CreateAccount = () => {
             .oneOf([Yup.ref('password')], 'Passwords must match')
             .required('Confirm Password is required'),
     });
+
+    useEffect(() => {
+
+        const get_roles = async () => {
+            try {
+                const roles = await baseGet("/v1/role/");
+                console.log(roles, "roles");
+
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+        get_roles();
+
+    }, [])
 
 
 
