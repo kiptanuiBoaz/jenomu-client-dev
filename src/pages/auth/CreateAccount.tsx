@@ -1,5 +1,5 @@
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
+import { LoadingButton } from '@mui/lab';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -14,6 +14,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { MuiTelInput } from 'mui-tel-input';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { basePost } from '../../utils/apiClient';
 
 const CreateAccount = () => {
     // Yup validation schema
@@ -25,27 +26,37 @@ const CreateAccount = () => {
         email: Yup.string().email('Invalid email address').required('Email is required'),
         password: Yup.string().required('Password is required'),
         confirmPassword: Yup.string()
-            .oneOf([Yup.ref('password'),], 'Passwords must match')
+            .oneOf([Yup.ref('password')], 'Passwords must match')
             .required('Confirm Password is required'),
     });
+
+
 
     // Formik setup
     const formik = useFormik({
         initialValues: {
-            firstName: '',
-            lastName: '',
+            first_name: '',
+            last_name: '',
             role: 'freelancer',
-            phoneNumber: '',
+            phone_number: '',
             email: '',
             password: '',
             confirmPassword: '',
         },
         validationSchema: validationSchema,
-        onSubmit: (values) => {
-            // Add form submission logic here
-            console.log(values);
+        onSubmit: (values): any => {
+            console.log('Form values:', values);
+            const { confirmPassword, ...newValues } = values;
+
+            basePost("/v1/user/register", newValues)
         },
     });
+    const handleSubmit = async () => {
+        const values = formik.values;
+        const { confirmPassword, ...newValues } = values;
+        const res = await basePost("/v1/user/register", newValues);
+        console.log(res);
+    }
 
     return (
         <Container component="main" maxWidth="xs">
@@ -64,22 +75,22 @@ const CreateAccount = () => {
                 <Typography component="h1" variant="h5">
                     Sign up
                 </Typography>
-                <Box component="form" noValidate onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
+                <Box component="form" noValidate sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 autoComplete="given-name"
-                                name="firstName"
+                                name="first_name"
                                 required
                                 fullWidth
                                 id="firstName"
                                 label="First Name"
                                 autoFocus
-                                value={formik.values.firstName}
+                                value={formik.values.first_name}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
-                                error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-                                helperText={formik.touched.firstName && formik.errors.firstName}
+                                error={formik.touched.first_name && Boolean(formik.errors.first_name)}
+                                helperText={formik.touched.first_name && formik.errors.first_name}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -88,13 +99,13 @@ const CreateAccount = () => {
                                 fullWidth
                                 id="lastName"
                                 label="Last Name"
-                                name="lastName"
+                                name="last_name"
                                 autoComplete="family-name"
-                                value={formik.values.lastName}
+                                value={formik.values.last_name}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
-                                error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-                                helperText={formik.touched.lastName && formik.errors.lastName}
+                                error={formik.touched.last_name && Boolean(formik.errors.last_name)}
+                                helperText={formik.touched.last_name && formik.errors.last_name}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -119,13 +130,13 @@ const CreateAccount = () => {
                             <MuiTelInput
                                 placeholder='Phone Number'
                                 fullWidth
-                                name="phoneNumber"
-                                value={formik.values.phoneNumber}
-                                onChange={(newValue) => formik.setFieldValue('phoneNumber', newValue)}
+                                name="phone_number"
+                                value={formik.values.phone_number}
+                                onChange={(newValue) => formik.setFieldValue('phone_number', newValue)}
                                 onBlur={formik.handleBlur}
                                 defaultCountry='CA'
-                                error={formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)}
-                                helperText={formik.touched.phoneNumber && formik.errors.phoneNumber}
+                                error={formik.touched.phone_number && Boolean(formik.errors.phone_number)}
+                                helperText={formik.touched.phone_number && formik.errors.phone_number}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -182,15 +193,21 @@ const CreateAccount = () => {
                             />
                         </Grid>
                     </Grid>
-                    <Button
-
-                        type="submit"
+                    <LoadingButton
+                        loadingPosition="end"
+                        loading={false}
+                        onClick={
+                            (e) => {
+                                handleSubmit();
+                                e.preventDefault()
+                            }}
+                        // type="submit"
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                     >
                         Sign Up
-                    </Button>
+                    </LoadingButton>
                     <Grid container justifyContent="flex-end">
                         <Grid item>
                             <Link href="/login" variant="body2">

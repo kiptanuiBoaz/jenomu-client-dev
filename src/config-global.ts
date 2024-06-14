@@ -3,7 +3,7 @@
 // API
 // ----------------------------------------------------------------------
 
-export const HOST_API_KEY = process.env.REACT_APP_HOST_API_KEY || 'https://eventaccumen.sapienafrica.com/api';
+export const HOST_API_KEY = 'http://test.jenomu.com/api';
 // export const HOST_API_KEY = process.env.REACT_APP_HOST_API_KEY || 'http://127.0.0.1:8000/api';
 
 
