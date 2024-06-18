@@ -8,6 +8,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const App = () => {
   // Create a client
   const queryClient = new QueryClient()
+
+
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>

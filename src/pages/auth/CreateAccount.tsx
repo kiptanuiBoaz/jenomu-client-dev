@@ -2,8 +2,6 @@ import Avatar from '@mui/material/Avatar';
 import { LoadingButton } from '@mui/lab';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -15,14 +13,22 @@ import { MuiTelInput } from 'mui-tel-input';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { baseGet, basePost } from '../../utils/apiClient';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { FormLabel } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const CreateAccount = () => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const [errorMsg, setErrorMsg] = useState(null);
+
+    const navigate = useNavigate();
+
     // Yup validation schema
     const validationSchema = Yup.object({
         firstName: Yup.string().required('First Name is required'),
         lastName: Yup.string().required('Last Name is required'),
-        role: Yup.string().required('Role is required'),
+        role_guid: Yup.string().required('Role is required'),
         phoneNumber: Yup.string().required('Phone Number is required'),
         email: Yup.string().email('Invalid email address').required('Email is required'),
         password: Yup.string().required('Password is required'),
@@ -31,21 +37,21 @@ const CreateAccount = () => {
             .required('Confirm Password is required'),
     });
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        const get_roles = async () => {
-            try {
-                const roles = await baseGet("/v1/role/");
-                console.log(roles, "roles");
+    //     const get_roles = async () => {
+    //         try {
+    //             const roles = await baseGet("/v1/role/");
+    //             console.log(roles, "roles");
 
-            } catch (error) {
-                console.log(error)
-            }
+    //         } catch (error) {
+    //             console.log(error)
+    //         }
 
-        }
-        get_roles();
+    //     }
+    //     get_roles();
 
-    }, [])
+    // }, [])
 
 
 
@@ -54,26 +60,38 @@ const CreateAccount = () => {
         initialValues: {
             first_name: '',
             last_name: '',
-            role: 'freelancer',
+            role_guid: 'freelancer',
             phone_number: '',
             email: '',
             password: '',
             confirmPassword: '',
         },
         validationSchema: validationSchema,
-        onSubmit: (values): any => {
-            console.log('Form values:', values);
-            const { confirmPassword, ...newValues } = values;
+        onSubmit: async () => {
 
-            basePost("/v1/user/register", newValues)
         },
     });
+
     const handleSubmit = async () => {
         const values = formik.values;
+        setLoading(true);
         const { confirmPassword, ...newValues } = values;
-        const res = await basePost("/v1/user/register", newValues);
-        console.log(res);
+        try {
+            const res = await basePost("/v1/user/register/", { ...newValues, is_active: true });
+            console.log(res);
+            navigate("/login")
+        } catch (error: any) {
+            console.log("error:", error);
+            setErrorMsg(error.message);
+            setError(true);
+        } finally {
+            setLoading(false);
+
+        }
+
     }
+
+    console.log(formik.values)
 
     return (
         <Container component="main" maxWidth="xs">
@@ -92,6 +110,7 @@ const CreateAccount = () => {
                 <Typography component="h1" variant="h5">
                     Sign up
                 </Typography>
+                <FormLabel error={error}>{errorMsg ?? ""}</FormLabel>
                 <Box component="form" noValidate sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
@@ -132,12 +151,12 @@ const CreateAccount = () => {
                                 fullWidth
                                 id="role"
                                 label="Role"
-                                name="role"
-                                value={formik.values.role}
+                                name="role_guid"
+                                value={formik.values.role_guid}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
-                                error={formik.touched.role && Boolean(formik.errors.role)}
-                                helperText={formik.touched.role && formik.errors.role}
+                                error={formik.touched.role_guid && Boolean(formik.errors.role_guid)}
+                                helperText={formik.touched.role_guid && formik.errors.role_guid}
                             >
                                 <MenuItem value="freelancer">Freelancer</MenuItem>
                                 <MenuItem value="researcher">Researcher</MenuItem>
@@ -203,20 +222,16 @@ const CreateAccount = () => {
                                 helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <FormControlLabel
-                                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                                label="I want to receive inspiration, marketing promotions and updates via email."
-                            />
-                        </Grid>
+
                     </Grid>
                     <LoadingButton
                         loadingPosition="end"
-                        loading={false}
+                        loading={loading}
                         onClick={
-                            (e) => {
+                            async (e) => {
                                 handleSubmit();
                                 e.preventDefault()
+                                formik.submitForm()
                             }}
                         // type="submit"
                         fullWidth

@@ -1,27 +1,16 @@
 import { RootState } from './../store/store';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User } from '../../types/auth.types';
+import { AuthInfoState, User } from '../../types/auth.types';
 
-interface AuthInfoState {
-    isAuthenticated: boolean;
-    user: User;
-}
+const storedAuth = JSON.parse(localStorage.getItem('auth') as string);
+console.log("storedAuth:", storedAuth);
 
-const initialUserState: User = {
-    email: "",
-    id: "",
-    lname: "",
-    fname: "",
-    phone_no: "",
-    avatar: null,
-    recycled: "",
-    role: {
-        id: "",
-        Permissions: []
-    }
+const initialUserState = {
+
 };
 
-const initialState: AuthInfoState = {
+
+const initialState: AuthInfoState = storedAuth ?? {
     user: initialUserState,
     isAuthenticated: false,
 };

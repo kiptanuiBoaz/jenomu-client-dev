@@ -1,10 +1,35 @@
-import { Container, CssBaseline, Box, Avatar, Typography, TextField, Button } from '@mui/material';
+import { Container, CssBaseline, Box, Avatar, Typography, TextField, Button, FormLabel } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { basePost } from '../../utils/apiClient';
+import { LoadingButton } from '@mui/lab';
 
 const SetNewPassword = () => {
-    const email = "user@example.com";
+
+    const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [token, setToken] = useState<string>();
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const [errorMsg, setErrorMsg] = useState(null);
+
+    const params = Object.fromEntries([...searchParams]);
+    console.log('Mounted:', params);
+
+    useEffect(() => {
+        const currentParams = Object.fromEntries([...searchParams]);
+        console.log('useEffect:', currentParams);
+        if (!currentParams.token) {
+            navigate("/reset-password");
+        } else {
+            setToken(currentParams.token)
+        }
+
+    }, [searchParams, setSearchParams]);
 
     const validationSchema = Yup.object({
         password: Yup.string()
@@ -21,7 +46,6 @@ const SetNewPassword = () => {
 
     const formik = useFormik({
         initialValues: {
-            email: email,
             password: '',
             confirmPassword: '',
         },
@@ -31,6 +55,25 @@ const SetNewPassword = () => {
             console.log(values);
         },
     });
+
+    const handleSubmit = async () => {
+        const values = formik.values;
+        setLoading(true);
+        const { confirmPassword, ...newValues } = values;
+        try {
+            const res = await basePost("/auth/password_reset/confirm/", { ...newValues, token });
+            console.log(res);
+            navigate("/login")
+        } catch (error: any) {
+            console.log("error:", error);
+            setErrorMsg(error.message);
+            setError(true);
+        } finally {
+            setLoading(false);
+
+        }
+
+    }
 
     return (
         <Container component="main" maxWidth="xs">
@@ -49,19 +92,9 @@ const SetNewPassword = () => {
                 <Typography component="h1" variant="h5">
                     Set New Password
                 </Typography>
+                <FormLabel error={error}>{errorMsg ?? ""}</FormLabel>
                 <Box component="form" noValidate onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
-                    <TextField
-                        margin="normal"
-                        fullWidth
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
-                        value={formik.values.email}
-                        InputProps={{
-                            readOnly: true,
-                        }}
-                    />
+
                     <TextField
                         margin="normal"
                         required
@@ -92,14 +125,23 @@ const SetNewPassword = () => {
                         error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
                         helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
                     />
-                    <Button
-                        type="submit"
+
+                    <LoadingButton
+                        loadingPosition="end"
+                        loading={loading}
+                        onClick={
+                            async (e) => {
+                                handleSubmit();
+                                e.preventDefault()
+                                formik.submitForm()
+                            }}
+                        // type="submit"
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                     >
                         Set Password
-                    </Button>
+                    </LoadingButton>
                 </Box>
             </Box>
         </Container>

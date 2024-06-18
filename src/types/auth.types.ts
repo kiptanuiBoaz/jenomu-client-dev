@@ -1,18 +1,30 @@
-export type Role = {
-    //eg:"admin" | "researcher" | "freelancer" 
-    id: string;
-    Permissions: string[];
-    //predefined for freelancer and researcher 
-    //dynamic for admins (to be managed by a root admin)
-};
+export interface Permission {
+    guid: string;
+    name: string;
+}
 
-export type User = {
+export interface Role {
+    guid: string;
+    name: string;
+    Permissions: Permission[];
+}
+
+export interface User {
+    access: string;
+    refresh: string;
     email: string;
-    id: string;
-    lname: string;
-    fname: string;
-    phone_no: string;
+    guid: string;
+    last_name: string;
+    first_name: string;
+    phone_number: string;
     avatar: string | null;
     recycled: string;
+    role_guid: string;
     role: Role;
-};
+}
+
+
+export interface AuthInfoState {
+    isAuthenticated: boolean;
+    user: any;
+}

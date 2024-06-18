@@ -10,12 +10,13 @@ interface AuthProps {
 
 const AuthWrapper = ({ role, children }: AuthProps) => {
     const { user, isAuthenticated } = useSelector(getUserInfoState);
+    console.log(isAuthenticated)
 
     if (!isAuthenticated) {
         return <Navigate to="/login" />;
     }
 
-    if (role && user.role.id !== role) {
+    if (role && user.user.role.name !== role) {
         return <Navigate to="/unauthorized" />;
     }
 

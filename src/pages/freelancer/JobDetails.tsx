@@ -1,16 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom';
-
-// Mock job data (same as in JobList)
-const mockJobs = [
-    { id: "1", title: 'Web Developer', company: 'Tech Solutions', location: 'New York, NY', description: 'Develop and maintain web applications.' },
-    { id: "2", title: 'Graphic Designer', company: 'Creative Minds', location: 'San Francisco, CA', description: 'Create visual concepts to communicate ideas.' },
-    { id: "3", title: 'Project Manager', company: 'Business Corp', location: 'Chicago, IL', description: 'Plan, initiate, and manage projects.' },
-    // Add more mock jobs as needed
-];
+import { all_jobs } from '../../utils/data';
+import { Box, Grid, Typography, Button } from '@mui/material';
 
 const JobDetails = () => {
     const { jobId } = useParams<{ jobId: string }>();
-    const job = mockJobs.find(job => job.id === jobId);
+    const job = all_jobs.find(job => job.id === jobId);
 
     const navigate = useNavigate();
 
@@ -19,14 +13,51 @@ const JobDetails = () => {
     }
 
     return (
-        <div>
-            <h1>{job.title}</h1>
-            <p><strong>Company:</strong> {job.company}</p>
-            <p><strong>Location:</strong> {job.location}</p>
-            <p><strong>Description:</strong> {job.description}</p>
+        <Grid container spacing={2}>
+            {/* Main Panel (70%) */}
+            <Grid item xs={12} md={8}>
+                <Box p={3} bgcolor="background.paper">
+                    <Typography variant="h4" gutterBottom>
+                        {job.title}
+                    </Typography>
+                    <Typography variant="subtitle1" gutterBottom>
+                        <strong>Company:</strong> "Jenomu"
+                    </Typography>
+                    <Typography variant="subtitle1" gutterBottom>
+                        <strong>Location:</strong> "Montreal, Canada"
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                        <strong>Description:</strong> {job.description}
+                    </Typography>
 
-            <button onClick={() => navigate(`/apply/${jobId}`)}>Apply job</button>
-        </div>
+                </Box>
+            </Grid>
+
+            {/* Side Panel (30%) */}
+            <Grid item xs={12} md={4}>
+                <Box p={3} bgcolor="background.paper">
+                    <Typography variant="h6" gutterBottom>
+                        Matching Skills
+                    </Typography>
+                    <Typography variant="body2" gutterBottom>
+                        {/* Display matching skills here */}
+                        {['Genetics', 'Molecular Biology', 'Sequencing', 'Data Analysis'].map((skill, index) => (
+                            <Typography key={index} variant="body2">
+                                - {skill}
+                            </Typography>
+                        ))}
+                    </Typography>
+                    <Button
+                        size="small"
+                        variant="contained"
+                        color="primary"
+                        onClick={() => navigate(`/apply/${jobId}`)}
+                    >
+                        Apply Now
+                    </Button>
+                </Box>
+            </Grid>
+        </Grid>
     );
 };
 

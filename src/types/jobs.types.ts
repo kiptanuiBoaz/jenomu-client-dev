@@ -3,5 +3,6 @@ export type JobCardProps = {
     proposedBudget: string,
     datePosted: string,
     description: string,
-    skills: string[]
+    skills: string[],
+    id: string
 }

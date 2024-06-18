@@ -1,11 +1,18 @@
-import { Container, CssBaseline, Box, Avatar, Typography, TextField, Button } from '@mui/material';
+import { Container, CssBaseline, Box, Avatar, Typography, TextField, Button, FormLabel } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useState } from 'react';
+import { LoadingButton } from '@mui/lab';
+import { basePost } from '../../utils/apiClient';
 
 const EnterCode = () => {
     const navigate = useNavigate();
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const [errorMsg, setErrorMsg] = useState(null);
 
     const validationSchema = Yup.object({
         code: Yup.string()
@@ -15,15 +22,34 @@ const EnterCode = () => {
 
     const formik = useFormik({
         initialValues: {
-            code: '',
+            token: '',
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
             // Add form submission logic here
             console.log(values);
-            navigate('/set-new-password');
+
         },
     });
+
+    const handleSubmit = async () => {
+        const values = formik.values;
+        setLoading(true);
+        try {
+            const res = await basePost("/auth/password_reset/validate_token/", values);
+            console.log(res);
+            navigate("/set-new-password");
+        } catch (error: any) {
+            console.log("error:", error);
+            setErrorMsg(error.detail);
+            setError(true);
+        } finally {
+            setLoading(false);
+
+        }
+
+    }
+
 
     return (
         <Container component="main" maxWidth="xs">
@@ -42,30 +68,40 @@ const EnterCode = () => {
                 <Typography component="h1" variant="h5">
                     Enter Code
                 </Typography>
+                <FormLabel error={error}>{errorMsg ?? ""}</FormLabel>
                 <Typography variant='body2'>A 4-digit code has been sent to your email</Typography>
                 <Box component="form" noValidate onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
                     <TextField
                         margin="normal"
                         required
                         fullWidth
-                        id="code"
+                        id="token"
                         label="Verification Code"
-                        name="code"
+                        name="token"
                         autoComplete="off"
-                        value={formik.values.code}
+                        value={formik.values.token}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        error={formik.touched.code && Boolean(formik.errors.code)}
-                        helperText={formik.touched.code && formik.errors.code}
+                        error={formik.touched.token && Boolean(formik.errors.token)}
+                        helperText={formik.touched.token && formik.errors.token}
                     />
-                    <Button
-                        type="submit"
+
+                    <LoadingButton
+                        loadingPosition="end"
+                        loading={loading}
+                        onClick={
+                            async (e) => {
+                                handleSubmit();
+                                e.preventDefault()
+                                formik.submitForm()
+                            }}
+                        // type="submit"
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                     >
                         Submit Code
-                    </Button>
+                    </LoadingButton>
                 </Box>
             </Box>
         </Container>

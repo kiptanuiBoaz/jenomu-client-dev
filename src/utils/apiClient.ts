@@ -1,5 +1,4 @@
 import axiosInstance from "./axios";
-import axios from "./axios";
 
 export const baseGet = async (url: string) => {
     const response = await axiosInstance.get(url)
