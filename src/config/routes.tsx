@@ -3,7 +3,7 @@ import UnauthorizedPage from '../pages/Unauthorized';
 import JobDetails from '../pages/freelancer/JobDetails';
 import AuthWrapper from '../auth/AuthWrapper';
 import ApplyJob from '../pages/freelancer/ApplyJob';
-import ResearcherDashboard from '../pages/researcher/ReseracherDashboard';
+import ResearcherDashboard from '../pages/researcher/ResercherDashboard';
 import AdminDashboard from '../pages/admin/AdminDashborad';
 import CreateAccount from '../pages/auth/CreateAccount';
 import Login from '../pages/auth/Login';
@@ -13,6 +13,7 @@ import ResetPasswordForm from '../pages/auth/ResetPassword';
 import JobSearchResults from '../pages/freelancer/JobSearchResults';
 import JobsList from '../pages/freelancer/JobsList';
 import CreateJob from '../pages/researcher/CreateJob';
+import EditJob from '../pages/researcher/EditJob';
 
 
 const AppRoutes = () => {
@@ -37,6 +38,7 @@ const AppRoutes = () => {
                 {/* Researcher Routes */}
                 <Route path="/researcher" element={< AuthWrapper role="researcher" > <ResearcherDashboard /></AuthWrapper >} />
                 <Route path="/researcher/post-job" element={< AuthWrapper role="researcher" > <CreateJob /></AuthWrapper >} />
+                <Route path="/researcher/edit-job" element={< AuthWrapper role="researcher" > <EditJob /></AuthWrapper >} />
 
                 {/* Admin Routes */}
                 <Route path="/admin" element={< AuthWrapper role="admin" > <AdminDashboard /></AuthWrapper >} />

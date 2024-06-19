@@ -1,16 +1,26 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { all_jobs } from '../../utils/data';
 import { Box, Grid, Typography, Button } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
+import { baseGet } from '../../utils/apiClient';
 
 const JobDetails = () => {
     const { jobId } = useParams<{ jobId: string }>();
-    const job = all_jobs.find(job => job.id === jobId);
+
 
     const navigate = useNavigate();
 
-    if (!job) {
+    const { data, isLoading, isError } = useQuery({
+        queryFn: async () => await baseGet(`/v1/job/by_guid/${jobId}/`),
+        queryKey: ["job"],
+
+    });
+
+    if (!data) {
         return <div>Job not found</div>;
     }
+
+    if (isLoading) return <Typography>Loading...</Typography>;
+    if (isError) return <Typography >Something went wrong</Typography>;
 
     return (
         <Grid container spacing={2}>
@@ -18,7 +28,7 @@ const JobDetails = () => {
             <Grid item xs={12} md={8}>
                 <Box p={3} bgcolor="background.paper">
                     <Typography variant="h4" gutterBottom>
-                        {job.title}
+                        {data.title}
                     </Typography>
                     <Typography variant="subtitle1" gutterBottom>
                         <strong>Company:</strong> "Jenomu"
@@ -27,7 +37,7 @@ const JobDetails = () => {
                         <strong>Location:</strong> "Montreal, Canada"
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                        <strong>Description:</strong> {job.description}
+                        <strong>Description:</strong> {data.description}
                     </Typography>
 
                 </Box>

@@ -1,16 +1,17 @@
 
 import authReducer from "../slices/authSlice";
-import jobsReducer from "../slices/jobsSlice";
+import filterReducer from '../slices/filterSlice';
 import { configureStore } from "@reduxjs/toolkit";
 import navigationReducer from "../slices/navigationSlice";
 
 const store = configureStore({
     reducer: {
         auth: authReducer,
-        jobs: jobsReducer,
+        filter: filterReducer,
         navigation: navigationReducer,
     },
 });
+
 
 store.subscribe(() => {
     localStorage.setItem("auth", JSON.stringify(store.getState().auth));

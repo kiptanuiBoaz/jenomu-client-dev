@@ -60,9 +60,9 @@ const CreateJob = () => {
     const handleSubmit = async () => {
         setLoading(true);
         try {
-            const res = await basePost("/v1/job/create/", { ...formik.values, skills_required: skillsRequired, manager_guid: user.user.guid });
+            const res = await basePost("/v1/job/create/", { ...formik.values, skills_required: skillsRequired });
             console.log(res);
-            navigate("/jobs");
+            navigate("/researcher");
         } catch (error: any) {
             console.log("error:", error);
             setErrorMsg("Something went wrong,try again");
@@ -145,9 +145,9 @@ const CreateJob = () => {
                                 id="multiple-limit-tags"
                                 options={top100SkillsInMedicalResearch}
                                 getOptionLabel={(option) => option}
-                                defaultValue={[top100SkillsInMedicalResearch[13], top100SkillsInMedicalResearch[12], top100SkillsInMedicalResearch[11]]}
+
                                 renderInput={(params) => (
-                                    <TextField {...params} fullWidth={true} label="Required skills" placeholder="Skills" />
+                                    <TextField {...params} fullWidth={true} label="Required skills" placeholder="Select a maximum of five skills" />
                                 )}
                             />
                         </Grid>

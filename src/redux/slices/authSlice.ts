@@ -3,11 +3,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AuthInfoState, User } from '../../types/auth.types';
 
 const storedAuth = JSON.parse(localStorage.getItem('auth') as string);
-console.log("storedAuth:", storedAuth);
 
-const initialUserState = {
 
-};
+const initialUserState = {};
 
 
 const initialState: AuthInfoState = storedAuth ?? {

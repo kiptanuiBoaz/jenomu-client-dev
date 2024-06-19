@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
 import {
-    Drawer, List, ListItem, ListItemText, ListItemIcon, Checkbox, Collapse, MenuItem, OutlinedInput, Typography,
+    Drawer, List, ListItem, ListItemText, ListItemIcon, Radio, Collapse, MenuItem, OutlinedInput, Typography,
     SelectChangeEvent,
     Box,
     Select,
     useMediaQuery,
+    Autocomplete,
+    TextField,
+    Checkbox,
 } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedStatuses, setSortField } from '../redux/slices/jobsSlice';
-import { RootState } from '../redux/store/store';
+import {
+    setSortField, setDatePosted, setStartDate, setBudget, setJobType, setSkillsRequired,
+    selectFilterFields
+} from '../redux/slices/filterSlice';
 import { useTheme } from '@mui/material/styles';
+import { top100SkillsInMedicalResearch } from '../utils/data';
+import { budgetOptions, datePostedOptions, jobTypeOptions, startDateOptions } from '../utils/filterOptions';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -25,12 +32,12 @@ const MenuProps = {
 
 const FilterDrawer = ({ open, onClose }: any) => {
     const dispatch = useDispatch();
-    const { sortField, selectedStatuses } = useSelector((state: RootState) => state.jobs);
+    const filterFields = useSelector(selectFilterFields);
     const [statusFilterOpen, setStatusFilterOpen] = useState(true);
     const [dateFilterOpen, setDateFilterOpen] = useState(false);
     const [budgetFilterOpen, setBudgetFilterOpen] = useState(false);
     const [jobTypeFilterOpen, setJobTypeFilterOpen] = useState(false);
-    const [skillsFilterOpen, setSkillsFilterOpen] = useState(false);
+    const [skillsFilterOpen, setSkillsFilterOpen] = useState(true);
 
     const theme = useTheme();
     const isMediumScreen = useMediaQuery(theme.breakpoints.up('md'));
@@ -39,52 +46,46 @@ const FilterDrawer = ({ open, onClose }: any) => {
         setter(prevState => !prevState);
     };
 
-    const handleStatusChange = (status: string) => {
-        const currentIndex = selectedStatuses.indexOf(status);
-        const newChecked = [...selectedStatuses];
-
-        if (currentIndex === -1) {
-            newChecked.push(status);
-        } else {
-            newChecked.splice(currentIndex, 1);
-        }
-
-        dispatch(setSelectedStatuses(newChecked));
+    const handleSortChange = (event: SelectChangeEvent<any>) => {
+        dispatch(setSortField(event.target.value));
     };
 
-    const handleChange = (event: SelectChangeEvent<any>) => {
-        const {
-            target: { value },
-        } = event;
-        dispatch(setSortField(typeof value === 'string' ? value.split(',') : value));
+    const handleDatePostedChange = (option: string) => {
+        dispatch(setDatePosted(option));
     };
 
-    const fields = [
-        'Status',
-        'Submission date',
-        'Proposed budget',
-        'Ralph Hubbard',
-    ];
+    const handleStartDateChange = (option: string) => {
+        dispatch(setStartDate(option));
+    };
 
-    const datePostedOptions = ['Today', 'This week', 'This month'];
-    const budgetOptions = ['0-100 dollars', '100-1000 dollars', 'More than 1000 dollars'];
-    const jobTypeOptions = ['Contract', 'Long-term'];
+    const handleBudgetChange = (option: string) => {
+        dispatch(setBudget(option));
+    };
+
+    const handleJobTypeChange = (option: string) => {
+        dispatch(setJobType(option));
+    };
+
+    const handleSkillsRequiredChange = (_e: any, values: string[]) => {
+        dispatch(setSkillsRequired(values));
+    };
 
     const drawerContent = (
         <Box sx={{ width: 250, padding: 2 }}>
-            <Typography variant="body2">Filter</Typography>
+            <Typography variant="h6">Filter</Typography>
             <List>
                 <ListItem>
                     <Select
+                        sx={{ width: 230 }}
                         displayEmpty
-                        value={sortField}
-                        onChange={handleChange}
+                        value={filterFields.sortField}
+                        onChange={handleSortChange}
                         input={<OutlinedInput />}
                         renderValue={(selected) => {
-                            if (selected.length === 0) {
+                            if (!selected) {
                                 return <em>Sort order</em>;
                             }
-                            return selected.join(', ');
+                            return selected;
                         }}
                         MenuProps={MenuProps}
                         inputProps={{ 'aria-label': 'Without label' }}
@@ -92,36 +93,13 @@ const FilterDrawer = ({ open, onClose }: any) => {
                         <MenuItem disabled value="">
                             <em>Sort order</em>
                         </MenuItem>
-                        {fields.map((name) => (
+                        {["ascending", "descending"].map((name) => (
                             <MenuItem key={name} value={name}>
                                 {name}
                             </MenuItem>
                         ))}
                     </Select>
                 </ListItem>
-
-                {/* Status Filter */}
-                <ListItem button onClick={() => handleToggle(setStatusFilterOpen)}>
-                    <ListItemText primary="Status" />
-                    {statusFilterOpen ? <ExpandLess /> : <ExpandMore />}
-                </ListItem>
-                <Collapse in={statusFilterOpen} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-                        {['Open', 'Closed'].map((status) => (
-                            <ListItem key={status} button onClick={() => handleStatusChange(status)}>
-                                <ListItemIcon>
-                                    <Checkbox
-                                        edge="start"
-                                        checked={selectedStatuses.indexOf(status) !== -1}
-                                        tabIndex={-1}
-                                        disableRipple
-                                    />
-                                </ListItemIcon>
-                                <ListItemText primary={status} />
-                            </ListItem>
-                        ))}
-                    </List>
-                </Collapse>
 
                 {/* Date Posted Filter */}
                 <ListItem button onClick={() => handleToggle(setDateFilterOpen)}>
@@ -131,9 +109,37 @@ const FilterDrawer = ({ open, onClose }: any) => {
                 <Collapse in={dateFilterOpen} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         {datePostedOptions.map((option) => (
-                            <ListItem key={option} button>
+                            <ListItem key={option} button onClick={() => handleDatePostedChange(option)}>
                                 <ListItemIcon>
-                                    <Checkbox edge="start" tabIndex={-1} disableRipple />
+                                    <Radio
+                                        edge="start"
+                                        checked={filterFields.datePosted === option}
+                                        tabIndex={-1}
+                                        disableRipple
+                                    />
+                                </ListItemIcon>
+                                <ListItemText primary={option} />
+                            </ListItem>
+                        ))}
+                    </List>
+                </Collapse>
+
+                {/* Start Date Filter */}
+                <ListItem button onClick={() => handleToggle(setStatusFilterOpen)}>
+                    <ListItemText primary="Start Date" />
+                    {statusFilterOpen ? <ExpandLess /> : <ExpandMore />}
+                </ListItem>
+                <Collapse in={statusFilterOpen} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                        {startDateOptions.map((option) => (
+                            <ListItem key={option} button onClick={() => handleStartDateChange(option)}>
+                                <ListItemIcon>
+                                    <Radio
+                                        edge="start"
+                                        checked={filterFields.startDate === option}
+                                        tabIndex={-1}
+                                        disableRipple
+                                    />
                                 </ListItemIcon>
                                 <ListItemText primary={option} />
                             </ListItem>
@@ -149,9 +155,14 @@ const FilterDrawer = ({ open, onClose }: any) => {
                 <Collapse in={budgetFilterOpen} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         {budgetOptions.map((option) => (
-                            <ListItem key={option} button>
+                            <ListItem key={option} button onClick={() => handleBudgetChange(option)}>
                                 <ListItemIcon>
-                                    <Checkbox edge="start" tabIndex={-1} disableRipple />
+                                    <Radio
+                                        edge="start"
+                                        checked={filterFields.budget === option}
+                                        tabIndex={-1}
+                                        disableRipple
+                                    />
                                 </ListItemIcon>
                                 <ListItemText primary={option} />
                             </ListItem>
@@ -167,9 +178,14 @@ const FilterDrawer = ({ open, onClose }: any) => {
                 <Collapse in={jobTypeFilterOpen} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         {jobTypeOptions.map((option) => (
-                            <ListItem key={option} button>
+                            <ListItem key={option} button onClick={() => handleJobTypeChange(option)}>
                                 <ListItemIcon>
-                                    <Checkbox edge="start" tabIndex={-1} disableRipple />
+                                    <Radio
+                                        edge="start"
+                                        checked={filterFields.jobType === option}
+                                        tabIndex={-1}
+                                        disableRipple
+                                    />
                                 </ListItemIcon>
                                 <ListItemText primary={option} />
                             </ListItem>
@@ -184,15 +200,27 @@ const FilterDrawer = ({ open, onClose }: any) => {
                 </ListItem>
                 <Collapse in={skillsFilterOpen} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                        {/* Replace the following with your skills fetching and rendering logic */}
-                        {['Skill 1', 'Skill 2', 'Skill 3'].map((skill) => (
-                            <ListItem key={skill} button>
-                                <ListItemIcon>
-                                    <Checkbox edge="start" tabIndex={-1} disableRipple />
-                                </ListItemIcon>
-                                <ListItemText primary={skill} />
-                            </ListItem>
-                        ))}
+                        <Autocomplete
+                            onChange={handleSkillsRequiredChange}
+                            multiple
+                            options={top100SkillsInMedicalResearch}
+                            id="checkboxes-tags-demo"
+                            disableCloseOnSelect
+                            getOptionLabel={(option) => option}
+                            renderOption={(props, option, { selected }) => (
+                                <li {...props}>
+                                    <Checkbox
+                                        style={{ marginRight: 8 }}
+                                        checked={selected}
+                                    />
+                                    {option}
+                                </li>
+                            )}
+                            style={{ width: 250, height: 30 }}
+                            renderInput={(params) => (
+                                <TextField {...params} label="Skills match" placeholder="Skills match" />
+                            )}
+                        />
                     </List>
                 </Collapse>
             </List>
@@ -200,7 +228,7 @@ const FilterDrawer = ({ open, onClose }: any) => {
     );
 
     return isMediumScreen ? (
-        <Box sx={{ width: 250 }}>{drawerContent}</Box>
+        <Box sx={{ width: 230 }}>{drawerContent}</Box>
     ) : (
         <Drawer
             variant="temporary"

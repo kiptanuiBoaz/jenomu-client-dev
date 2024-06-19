@@ -10,8 +10,10 @@ import { CiSearch } from 'react-icons/ci';
 import { DropdownMenu } from './NavDropDown';
 import { useNavigate } from 'react-router-dom';
 import { getUserInfoState } from '../redux/slices/authSlice';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import NavProfile from './NavProfile';
+import { resetFilterFields, setSearchTerm } from '../redux/slices/filterSlice';
+import { RootState } from '../redux/store/store';
 
 
 
@@ -19,8 +21,15 @@ const Navbar = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
     const theme = useTheme();
     const navigate = useNavigate();
 
-    const [searchTerm, setSearchTerm] = useState('');
     const [isFocused, setIsFocused] = useState(false);
+
+    const dispatch = useDispatch();
+    const searchTerm = useSelector((state: RootState) => state.filter.searchTerm);
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(resetFilterFields());
+        dispatch(setSearchTerm(event.target.value));
+    };
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -70,11 +79,11 @@ const Navbar = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                     }}
                 >
                     <MenuItem onClick={() => navigate("/researcher/post-job")}>Cretate New</MenuItem>
-                    <MenuItem onClick={handleClose}>View All</MenuItem>
+                    <MenuItem onClick={() => navigate("/researcher/")}>View All</MenuItem>
                     <MenuItem onClick={handleClose}>Logout</MenuItem>
                 </Menu>
-                <DropdownMenu title="Get Talent" options={['Option 1', 'Option 2']} />
-                <DropdownMenu title="Post a job" options={['Create New', 'Option 2']} />
+                {/* <DropdownMenu title="Get Talent" options={['Option 1', 'Option 2']} />
+                <DropdownMenu title="Post a job" options={['Create New', 'Option 2']} /> */}
 
                 <Box style={{ flexGrow: 1 }} />
                 <Box
@@ -85,7 +94,7 @@ const Navbar = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                         marginRight: '16px',
                         marginLeft: 0,
                         width: '100%',
-                        maxWidth: '200px',
+                        maxWidth: '300px',
                         [theme.breakpoints.up('sm')]: {
                             marginLeft: '24px',
                             width: 'auto',
@@ -94,11 +103,10 @@ const Navbar = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                 >
                     <TextField
                         size='small'
-                        // sx={{ margin: "10px" }}
                         placeholder="Search..."
                         value={searchTerm}
+                        onChange={handleSearchChange}
                         type="text"
-                        onChange={(e) => setSearchTerm(e.target.value)}
                         id="outlined-basic"
                         variant="outlined"
                         onFocus={() => setIsFocused(true)}

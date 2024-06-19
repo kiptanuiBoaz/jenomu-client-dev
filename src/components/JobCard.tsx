@@ -7,11 +7,13 @@ import {
     Grid,
     CardActionArea,
     Button,
+    Stack,
 } from '@mui/material';
 import { JobCardProps } from '../types/jobs.types';
 import { truncateText } from '../utils/truncateText';
 import { useNavigate } from 'react-router-dom';
 import { fToNow } from '../utils/formatTime';
+import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 
 
 export const JobCard = ({ title, proposedBudget, datePosted, description, skills, id }: JobCardProps) => {
@@ -43,15 +45,19 @@ export const JobCard = ({ title, proposedBudget, datePosted, description, skills
                     {truncateText(description, 40)}
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {skills.map((skill: string, index: number) => (
+                    {skills && skills.map((skill: string, index: number) => (
                         <Chip key={index} label={skill} size="small" />
                     ))}
                 </Box>
             </CardContent>
-            <CardActionArea sx={{ p: 2 }}>
-                <Button onClick={() => handleViewDetails(id)} size='small' variant='outlined' >
-                    View More
-                </Button>
+            <CardActionArea sx={{ p: 2 }} onClick={() => handleViewDetails(id)}   >
+                <Stack sx={{ justifyContent: "space-between" }} direction={"row"}>
+                    <Typography variant="body1" align="left">
+                        View More
+                    </Typography>
+                    <TrendingFlatIcon fontSize="small" />
+                </Stack>
+
             </CardActionArea>
         </Card>
     );

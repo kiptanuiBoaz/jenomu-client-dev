@@ -8,21 +8,15 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useDispatch } from 'react-redux';
 import { logout } from '../redux/slices/authSlice';
 
-interface User {
-    first_name: string;
-    last_name: string;
-    email: string;
-    avatar: string;
-}
+
 
 interface NavProfileProps {
-    user: User;
+    user: any;
 }
 
 const NavProfile = ({ user }: NavProfileProps) => {
     const [notificationsAnchor, setNotificationsAnchor] = useState<null | HTMLElement>(null);
     const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
-    const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -40,15 +34,6 @@ const NavProfile = ({ user }: NavProfileProps) => {
 
     const handleProfileClose = () => {
         setProfileAnchor(null);
-    };
-
-    const openProfileDialog = () => {
-        setIsProfileDialogOpen(true);
-        setProfileAnchor(null); // Close the profile menu when dialog opens
-    };
-
-    const closeProfileDialog = () => {
-        setIsProfileDialogOpen(false);
     };
 
     return (
@@ -79,21 +64,21 @@ const NavProfile = ({ user }: NavProfileProps) => {
             <Menu anchorEl={profileAnchor} open={Boolean(profileAnchor)} onClose={handleProfileClose}>
                 <DialogContent>
                     <Box sx={{ flexDirection: "column", display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <Avatar src={user.avatar} sx={{ width: 100, height: 100 }} />
+                        <Avatar src={user.user.avatar} sx={{ width: 100, height: 100 }} />
                         <Box sx={{ justifyContent: "center" }}>
                             <Typography textAlign={"center"} variant="subtitle1">
-                                {user.first_name} {user.last_name}
+                                {user.user.first_name} {user.user.last_name}
                             </Typography>
                             <Typography textAlign={"center"} variant="body2" color="textSecondary">
                                 {user.email}
                             </Typography>
                         </Box>
                     </Box>
-                    <MenuItem onClick={closeProfileDialog}>
+                    <MenuItem >
                         <SettingsIcon fontSize="small" sx={{ marginRight: 2 }} />
                         Settings
                     </MenuItem>
-                    <MenuItem onClick={closeProfileDialog}>
+                    <MenuItem >
                         <EditIcon fontSize="small" sx={{ marginRight: 2 }} />
                         Edit Profile
                     </MenuItem>
