@@ -12,10 +12,10 @@ import MenuItem from '@mui/material/MenuItem';
 import { MuiTelInput } from 'mui-tel-input';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { baseGet, basePost } from '../../utils/apiClient';
-import { useEffect, useState } from 'react';
 import { FormLabel } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { basePost } from '../../utils/apiClient';
 
 const CreateAccount = () => {
     const [loading, setLoading] = useState(false);

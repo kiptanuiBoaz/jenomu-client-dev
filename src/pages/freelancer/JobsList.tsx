@@ -80,7 +80,7 @@ const JobsList = () => {
 
     return (
         <>
-            <Navbar isAuthenticated={isAuthenticated} />
+
             <Container maxWidth="lg" sx={{ paddingTop: "100px" }}>
                 <Grid container spacing={2}>
                     {!isMediumScreen && (

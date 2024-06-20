@@ -1,75 +1,38 @@
-import { Box, Button, Container, Typography } from "@mui/material";
-
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { baseDelete, baseGet, basePost } from "../../utils/apiClient";
+import { Container, Grid, Typography } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
+import { baseGet } from "../../utils/apiClient";
 import { getUserInfoState } from "../../redux/slices/authSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { setCurrentJob } from "../../redux/slices/navigationSlice";
-import { useNavigate } from "react-router-dom";
-import Notiflix, { Confirm } from "notiflix";
-
+import { useSelector } from "react-redux";
+import ResearcherProfile from '../../components/ResearcherProfile';
+import ResearcherJobTabs from "../../components/ResearcherJobCard";
 
 const ResearcherDashboard = () => {
     const { user } = useSelector(getUserInfoState);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
 
     const { data, isLoading, isError } = useQuery({
-        // / v1 / job / by_creator / ${ user.user.guid } /
         queryFn: async () => await baseGet(`/v1/job/by_creator/${user.user.guid}/`),
         queryKey: ["jobs"],
-
     });
 
-    console.log(user.user.guid);
 
-    const handleDelete = async (job_guid: string) => {
-        Confirm.show(
-            'Delete this job ?',
-            'This operation cannot be undone, and this record will be lost completely.',
-            'Delete',
-            'Cancel',
-            () => deleteJob.mutate(job_guid),
-            () => { },
-            {
-            },
-        );
-    }
-
-    const deleteJob = useMutation({
-        mutationFn: async (job_guid: string) => await baseDelete(`/v1/job/delete/${job_guid}/`),
-        onSuccess: () => {
-            Notiflix.Notify.success('Submitted Successfully!');
-        },
-        onError: () => {
-            Notiflix.Notify.failure('Failed to submit feedback!');
-
-        },
-    });
-    // const handleDelete()=>{
-    //     try {
-
-    //     } catch (error) {
-
-    //     }
-    // }
-
+    console.log(user);
 
     if (isLoading) return <Typography>Loading...</Typography>;
-    if (isError) return <Typography >Something went wrong</Typography>;
+    if (isError) return <Typography>Something went wrong</Typography>;
 
-    return <Container>
-        {data.map((job: any) => <Box key={data.guid}>
-            <Typography>{job.name}</Typography>
-            <Typography>{job.description}</Typography>
-            <Typography>{job.proposed_budget}</Typography>
-            <Button variant="outlined" onClick={() => {
-                dispatch(setCurrentJob(job.guid));
-                navigate("/researcher/edit-job")
-            }}>Edit</Button>
-            <Button color="error" variant="outlined" onClick={() => handleDelete(job.guid)}>Delete</Button>
-        </Box>)}
-    </Container>;
+
+    return (
+        <Container maxWidth="lg" sx={{ paddingTop: "50px", backgroundColor: "#f7f7f7" }}>
+            <Grid container spacing={2}>
+                <Grid item xs={12} md={4}>
+                    <ResearcherProfile user={user} />
+                </Grid>
+                <Grid item xs={12} md={8}>
+                    <ResearcherJobTabs jobs={data} />
+                </Grid>
+            </Grid>
+        </Container>
+    );
 };
 
 export default ResearcherDashboard;

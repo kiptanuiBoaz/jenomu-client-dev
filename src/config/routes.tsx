@@ -14,13 +14,18 @@ import JobSearchResults from '../pages/freelancer/JobSearchResults';
 import JobsList from '../pages/freelancer/JobsList';
 import CreateJob from '../pages/researcher/CreateJob';
 import EditJob from '../pages/researcher/EditJob';
-
+import { useSelector } from 'react-redux';
+import { getUserInfoState } from '../redux/slices/authSlice';
+import Navbar from '../components/Navbar';
 
 const AppRoutes = () => {
+    const { isAuthenticated } = useSelector(getUserInfoState);
 
     return (
         <Router>
+            <Navbar isAuthenticated={isAuthenticated} />
             <Routes>
+
                 {/* Public Routes */}
                 <Route index path="/" element={< JobsList />} />
                 <Route index path="/search/jobs" element={< JobSearchResults />} />
