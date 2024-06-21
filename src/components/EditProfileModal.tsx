@@ -11,30 +11,30 @@ import { MuiTelInput } from 'mui-tel-input';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useState } from 'react';
-import { Modal, Fade, Backdrop, FormLabel } from '@mui/material';
-import { basePost } from '../utils/apiClient';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { Modal, Fade, Backdrop, FormLabel, IconButton, Autocomplete } from '@mui/material';
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import { basePatch } from '../utils/apiClient';
+import { HOST_API_KEY } from '../config-global';
+import { useDispatch } from 'react-redux';
+import { login, setUserInfo } from '../redux/slices/authSlice';
+import { top100SkillsInMedicalResearch } from '../utils/data';
 
 const validationSchema = Yup.object({
-    first_name: Yup.string().required('First Name is required'),
-    last_name: Yup.string().required('Last Name is required'),
-    role_guid: Yup.string().required('Role is required'),
-    phone_number: Yup.string().required('Phone Number is required'),
-    email: Yup.string().email('Invalid email address').required('Email is required'),
+    specialty: Yup.string().required('Specialy is required'),
 });
 
 const EditProfileModal = ({ open, handleClose, userInfo }: any) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
-    const [errorMsg, setErrorMsg] = useState(null);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const [avatar, setAvatar] = useState(`${HOST_API_KEY}${userInfo.profile.image}`);
+    const [skills, setSkills] = useState<string[]>([]);
+
+    const dispatch = useDispatch();
 
     const formik = useFormik({
         initialValues: {
-            first_name: userInfo.user.first_name,
-            last_name: userInfo.user.last_name,
-            role_guid: userInfo.user.role_guid,
-            phone_number: userInfo.user.phone_number,
-            email: userInfo.user.email,
+            specialty: userInfo.profile.specialty,
         },
         validationSchema: validationSchema,
         onSubmit: async (values) => {
@@ -42,11 +42,14 @@ const EditProfileModal = ({ open, handleClose, userInfo }: any) => {
         }
     });
 
+
     const handleSubmit = async () => {
+
         setLoading(true);
         try {
-            await basePost("/v1/user/update/", formik.values);
-            handleClose();
+            const res = await basePatch(`/v1/profile/update/`, { specialty: [formik.values.specialty], skills, image: avatar });
+            dispatch(setUserInfo(res))
+            // handleClose();
         } catch (error: any) {
             setErrorMsg(error.message);
             setError(true);
@@ -56,14 +59,29 @@ const EditProfileModal = ({ open, handleClose, userInfo }: any) => {
     };
 
 
+    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                setAvatar(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     return (
         <Modal
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
             open={open}
             onClose={handleClose}
             closeAfterTransition
-            BackdropComponent={Backdrop}
-            BackdropProps={{
-                timeout: 500,
+            slots={{ backdrop: Backdrop }}
+            slotProps={{
+                backdrop: {
+                    timeout: 500,
+                },
             }}
         >
             <Fade in={open}>
@@ -80,92 +98,64 @@ const EditProfileModal = ({ open, handleClose, userInfo }: any) => {
                             borderRadius: 2,
                         }}
                     >
-                        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                            <LockOutlinedIcon />
-                        </Avatar>
+                        <Box sx={{ position: 'relative', mb: 2 }}>
+                            <Avatar sx={{ width: 100, height: 100 }} src={avatar} />
+                            <IconButton
+                                color="primary"
+                                aria-label="upload picture"
+                                component="label"
+                                sx={{
+                                    position: 'absolute',
+                                    bottom: 0,
+                                    right: 0,
+                                    backgroundColor: 'white',
+                                }}
+                            >
+                                <input hidden accept="image/*" type="file" onChange={handleAvatarChange} />
+                                <PhotoCamera />
+                            </IconButton>
+                        </Box>
                         <Typography component="h1" variant="h5">
                             Edit Profile
                         </Typography>
                         <FormLabel error={error}>{errorMsg ?? ""}</FormLabel>
                         <Box component="form" noValidate onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
                             <Grid container spacing={2}>
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} >
                                     <TextField
                                         autoComplete="given-name"
-                                        name="first_name"
+                                        name="specialty"
                                         required
                                         fullWidth
-                                        id="firstName"
-                                        label="First Name"
+                                        id="specialty"
+                                        label="Specialty"
                                         autoFocus
-                                        value={formik.values.first_name}
+                                        value={formik.values.specialty}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
-                                        error={formik.touched.first_name && Boolean(formik.errors.first_name)}
-                                        helperText={formik.touched.first_name && formik.errors.first_name}
+                                        error={formik.touched.specialty && Boolean(formik.errors.specialty)}
+                                        helperText={formik.touched.specialty && formik.errors.specialty as string}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="lastName"
-                                        label="Last Name"
-                                        name="last_name"
-                                        autoComplete="family-name"
-                                        value={formik.values.last_name}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        error={formik.touched.last_name && Boolean(formik.errors.last_name)}
-                                        helperText={formik.touched.last_name && formik.errors.last_name}
-                                    />
-                                </Grid>
+
                                 <Grid item xs={12}>
-                                    <TextField
-                                        select
-                                        required
-                                        fullWidth
-                                        id="role"
-                                        label="Role"
-                                        name="role_guid"
-                                        value={formik.values.role_guid}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        error={formik.touched.role_guid && Boolean(formik.errors.role_guid)}
-                                        helperText={formik.touched.role_guid && formik.errors.role_guid}
-                                    >
-                                        <MenuItem value="freelancer">Freelancer</MenuItem>
-                                        <MenuItem value="researcher">Researcher</MenuItem>
-                                    </TextField>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <MuiTelInput
-                                        placeholder="Phone Number"
-                                        fullWidth
-                                        name="phone_number"
-                                        value={formik.values.phone_number}
-                                        onChange={(newValue) => formik.setFieldValue('phone_number', newValue)}
-                                        onBlur={formik.handleBlur}
-                                        defaultCountry="CA"
-                                        error={formik.touched.phone_number && Boolean(formik.errors.phone_number)}
-                                        helperText={formik.touched.phone_number && formik.errors.phone_number}
+                                    <Autocomplete
+                                        fullWidth={true}
+                                        onChange={(_e, v: Array<string>) => setSkills(v)}
+                                        multiple
+                                        limitTags={2}
+                                        id="multiple-limit-tags"
+                                        options={top100SkillsInMedicalResearch}
+                                        getOptionLabel={(option) => option}
+
+                                        renderInput={(params) => (
+                                            <TextField {...params} fullWidth={true} label="Skills" placeholder="Select a maximum of five skills" />
+                                        )}
                                     />
                                 </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="email"
-                                        label="Email Address"
-                                        name="email"
-                                        autoComplete="email"
-                                        value={formik.values.email}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        error={formik.touched.email && Boolean(formik.errors.email)}
-                                        helperText={formik.touched.email && formik.errors.email}
-                                    />
-                                </Grid>
+
+
+
                             </Grid>
                             <LoadingButton
                                 loadingPosition="end"
@@ -173,10 +163,9 @@ const EditProfileModal = ({ open, handleClose, userInfo }: any) => {
                                 onClick={
                                     async (e) => {
                                         handleSubmit();
-                                        e.preventDefault()
-                                        formik.submitForm()
+                                        e.preventDefault();
+                                        formik.submitForm();
                                     }}
-
                                 fullWidth
                                 variant="contained"
                                 sx={{ mt: 3, mb: 2 }}

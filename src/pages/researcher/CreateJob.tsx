@@ -10,11 +10,12 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import { basePost } from '../../utils/apiClient';
-import { Autocomplete } from '@mui/material';
+import { Autocomplete, MenuItem } from '@mui/material';
 import { FormLabel } from '@mui/material';
 import { top100SkillsInMedicalResearch } from '../../utils/data';
 import { useSelector } from 'react-redux';
 import { getUserInfoState } from '../../redux/slices/authSlice';
+import { Notify } from 'notiflix';
 
 const CreateJob = () => {
     const [loading, setLoading] = useState(false);
@@ -62,6 +63,7 @@ const CreateJob = () => {
         try {
             const res = await basePost("/v1/job/create/", { ...formik.values, skills_required: skillsRequired });
             console.log(res);
+            Notify.success("Job created successfully")
             navigate("/researcher");
         } catch (error: any) {
             console.log("error:", error);
@@ -100,6 +102,7 @@ const CreateJob = () => {
                         </Grid>
                         <Grid item xs={12} md={6}>
                             <TextField
+                                select
                                 required
                                 fullWidth
                                 id="job_type"
@@ -110,8 +113,13 @@ const CreateJob = () => {
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.job_type && Boolean(formik.errors.job_type)}
                                 helperText={formik.touched.job_type && formik.errors.job_type}
-                            />
+                            >
+                                <MenuItem value="freelance">Freelance</MenuItem>
+                                <MenuItem value="contract">Contract</MenuItem>
+                                <MenuItem value="long-term">Long Term</MenuItem>
+                            </TextField>
                         </Grid>
+
                         <Grid item xs={12}>
                             <TextField
                                 required

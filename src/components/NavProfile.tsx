@@ -40,7 +40,7 @@ const NavProfile = ({ user }: NavProfileProps) => {
         <Box>
             {/* Notifications Button */}
             <IconButton edge="end" aria-label="notifications" onClick={handleNotificationsOpen}>
-                <NotificationsNoneOutlinedIcon fontSize="large" sx={{ width: 30, height: 30, color: "#fff" }} />
+                <NotificationsNoneOutlinedIcon fontSize="large" sx={{ width: 30, height: 30 }} />
             </IconButton>
             <Menu anchorEl={notificationsAnchor} open={Boolean(notificationsAnchor)} onClose={handleNotificationsClose}>
                 <MenuItem>
@@ -64,14 +64,16 @@ const NavProfile = ({ user }: NavProfileProps) => {
             <Menu anchorEl={profileAnchor} open={Boolean(profileAnchor)} onClose={handleProfileClose}>
                 <DialogContent>
                     <Box sx={{ flexDirection: "column", display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <Avatar src={user.user.avatar} sx={{ width: 100, height: 100 }} />
+                        <Avatar src={user.profile.image} sx={{ width: 100, height: 100 }} />
                         <Box sx={{ justifyContent: "center" }}>
                             <Typography textAlign={"center"} variant="subtitle1">
                                 {user.user.first_name} {user.user.last_name}
                             </Typography>
+                            <Typography >{user.user.role.name}</Typography>
                             <Typography textAlign={"center"} variant="body2" color="textSecondary">
                                 {user.email}
                             </Typography>
+
                         </Box>
                     </Box>
                     <MenuItem >

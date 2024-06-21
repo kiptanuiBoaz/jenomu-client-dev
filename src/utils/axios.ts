@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'accept': 'application/json',
-    'Authorization': storedAuth.isAuthenticated ? `Bearer ${storedAuth.user.access}` : "",
+    'Authorization': storedAuth?.isAuthenticated ? `Bearer ${storedAuth.user.access}` : "",
   }
 });
 

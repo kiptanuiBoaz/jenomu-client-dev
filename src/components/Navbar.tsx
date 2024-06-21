@@ -5,10 +5,9 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
-import { Box, InputAdornment, Link, Menu, MenuItem, useTheme } from '@mui/material';
+import { Box, InputAdornment, Link, Menu, MenuItem, Stack, useTheme } from '@mui/material';
 import { CiSearch } from 'react-icons/ci';
-import { DropdownMenu } from './NavDropDown';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getUserInfoState } from '../redux/slices/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import NavProfile from './NavProfile';
@@ -41,19 +40,24 @@ const Navbar = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
     };
 
     const { user } = useSelector(getUserInfoState);
+    const location = useLocation();
+
+    // List of paths where the navbar should be hidden
+    const authPaths = ['/login', '/enter-code', '/set-new-password', '/reset-password', '/create-account'];
     return (
-        <AppBar position="fixed" sx={{ backgroundColor: 'gray', m: 0 }}>
+        !authPaths.includes(location.pathname) &&
+        <AppBar position="fixed" sx={{ backgroundColor: "#f7f7f7", m: 0 }}>
             <Toolbar>
                 <Typography variant="h5" noWrap sx={{ marginRight: 5, display: { xs: 'none', sm: 'block' } }}>
-                    <Link color={'#fff'} href="https://jenomu.com">
+                    <Link href="/">
                         Jenomu
                     </Link>
 
                 </Typography>
                 <Button
-                    // 
+                    color={"secondary"}
                     variant="text"
-                    style={{ color: "#ccc", textTransform: "none" }}
+                    style={{ textTransform: "none" }}
                     id="demo-positioned-button"
                     aria-controls={open ? 'demo-positioned-menu' : undefined}
                     aria-haspopup="true"
@@ -80,8 +84,11 @@ const Navbar = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                 >
                     <MenuItem onClick={() => navigate("/researcher/post-job")}>Cretate New</MenuItem>
                     <MenuItem onClick={() => navigate("/researcher/")}>View All</MenuItem>
-                    <MenuItem onClick={handleClose}>Logout</MenuItem>
+                    <MenuItem onClick={() => navigate("/freelancer/")}>View Applications</MenuItem>
                 </Menu>
+
+
+
                 {/* <DropdownMenu title="Get Talent" options={['Option 1', 'Option 2']} />
                 <DropdownMenu title="Post a job" options={['Create New', 'Option 2']} /> */}
 
@@ -113,7 +120,7 @@ const Navbar = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                         onBlur={() => setIsFocused(false)}
                         InputProps={{
                             startAdornment: !isFocused && (
-                                <InputAdornment position="start">
+                                <InputAdornment position="end">
                                     <IconButton edge="start">
                                         <CiSearch />
                                     </IconButton>
@@ -125,13 +132,14 @@ const Navbar = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                 {isAuthenticated
                     ? <NavProfile user={user} />
                     : (
-                        <>
-                            <Button onClick={() => navigate("/create-account")} variant='outlined' color="inherit">Sign In</Button>
-                            <Button onClick={() => navigate("/login")} sx={{ backgroundColor: "primary", color: "#fff" }} >Sign Up</Button>
-                        </>
+                        <Stack gap={1} direction={'row'}>
+                            <Button onClick={() => navigate("/login")} variant='outlined' >Sign In</Button>
+                            <Button onClick={() => navigate("/create-account")} sx={{ backgroundColor: "primary", }} variant="contained" >Sign Up</Button>
+                        </Stack>
                     )}
             </Toolbar>
         </AppBar>
+
     );
 };
 
