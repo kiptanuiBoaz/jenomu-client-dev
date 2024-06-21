@@ -83,7 +83,7 @@ const Navbar = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                     }}
                 >
                     <MenuItem onClick={() => navigate("/researcher/post-job")}>Cretate New</MenuItem>
-                    <MenuItem onClick={() => navigate("/researcher/")}>View All</MenuItem>
+                    <MenuItem onClick={() => navigate("/researcher/")}>View Jobs</MenuItem>
                     <MenuItem onClick={() => navigate("/freelancer/")}>View Applications</MenuItem>
                 </Menu>
 
