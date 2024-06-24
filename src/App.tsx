@@ -1,11 +1,13 @@
 import AppRoutes from './config/routes';
+import ThemeProvider from './theme'
 
 const App = () => {
 
 
-  return (<>
+  return (
+  <ThemeProvider>
     <AppRoutes />
-  </>
+  </ThemeProvider>
 
 
 
