@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 import { getUserInfoState } from '../redux/slices/authSlice';
 import Navbar from '../components/Navbar';
 import FreelancerDashboard from '../pages/freelancer/FreeLancerDashboard';
+import JobApplicationDetails from '../pages/freelancer/JobApplicationDetails';
 
 const AppRoutes = () => {
     const { isAuthenticated } = useSelector(getUserInfoState);
@@ -43,6 +44,7 @@ const AppRoutes = () => {
                 <Route path="/researcher" element={<AuthWrapper role="researcher"><ResearcherDashboard /></AuthWrapper>} />
                 <Route path="/researcher/post-job" element={<AuthWrapper role="researcher"><CreateJob /></AuthWrapper>} />
                 <Route path="/researcher/edit-job" element={<AuthWrapper role="researcher"><EditJob /></AuthWrapper>} />
+                <Route path="/researcher/application/:applicationId" element={<AuthWrapper role="researcher"><JobApplicationDetails /></AuthWrapper>} />
 
                 {/* Admin Routes */}
                 <Route path="/admin" element={<AuthWrapper role="admin"><AdminDashboard /></AuthWrapper>} />

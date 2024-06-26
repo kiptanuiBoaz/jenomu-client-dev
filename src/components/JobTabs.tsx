@@ -2,8 +2,9 @@ import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { resetFilterFields, setJobTabs } from '../redux/slices/filterSlice';
+import { getUserInfoState } from '../redux/slices/authSlice';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -44,12 +45,14 @@ export default function JobsTabs() {
         dispatch(setJobTabs(newValue));
     };
 
+    const { isAuthenticated } = useSelector(getUserInfoState);
+
     return (
         <Box sx={{ width: '100%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                     <Tab sx={{ textTransform: "none" }} label="All " {...a11yProps(0)} />
-                    <Tab sx={{ textTransform: "none" }} label="Best Match" {...a11yProps(1)} />
+                    {isAuthenticated && <Tab sx={{ textTransform: "none" }} label="Best Match" {...a11yProps(1)} />}
                     <Tab sx={{ textTransform: "none" }} label="Most Recent" {...a11yProps(2)} />
                 </Tabs>
             </Box>
