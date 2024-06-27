@@ -9,6 +9,7 @@ import FilteredJobs from '../../components/FilterdJobs';
 import { useQuery } from '@tanstack/react-query';
 import { baseGet } from '../../utils/apiClient';
 import { selectFilterFields } from '../../redux/slices/filterSlice';
+import LoadingScreen from '../../components/Loading';
 
 export const JobsList = () => {
     const [filterOpen, setFilterOpen] = useState(false);
@@ -83,7 +84,7 @@ export const JobsList = () => {
 
     const filteredJobs = data ? sortJobs(filterJobs(data)) : [];
 
-    if (isLoading) return <Typography>Loading...</Typography>;
+    if (isLoading) return <LoadingScreen />;
     if (isError) return <Typography>Something went wrong</Typography>;
     if (isError) console.log(isError);
 

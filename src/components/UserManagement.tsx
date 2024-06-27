@@ -19,12 +19,15 @@ const UserManagement = () => {
             field: 'avatar',
             headerName: 'Avatar',
             width: 70,
-            renderCell: (params) => {
-                console.log(params)
-                return (
-                    <Avatar  {...stringAvatar(`${params.row.first_name}${" "}${params.row.last_name}`), { p: 1 }} sizes="small" src={params.value} alt={params.row.first_name} />
-                )
-            },
+            renderCell: (params) => (
+                <Avatar
+                    {...stringAvatar(`${params.row.first_name}${" "}${params.row.last_name}`)}
+                    sizes="small"
+                    src={params.value}
+                    alt={params.row.first_name}
+                />
+            )
+            ,
         },
         { field: 'id', headerName: 'ID', width: 50 },
         { field: 'first_name', headerName: 'First Name', width: 100 },
