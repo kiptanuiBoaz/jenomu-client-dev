@@ -47,7 +47,7 @@ const AppRoutes = () => {
                 <Route path="/researcher/application/:applicationId" element={<AuthWrapper role="researcher"><JobApplicationDetails /></AuthWrapper>} />
 
                 {/* Admin Routes */}
-                <Route path="/admin" element={<AuthWrapper role="admin"><AdminDashboard /></AuthWrapper>} />
+                <Route path="/admin" element={<AuthWrapper role="freelancer"><AdminDashboard /></AuthWrapper>} />
             </Routes>
         </Router>
     );

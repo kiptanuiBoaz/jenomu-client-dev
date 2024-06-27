@@ -44,7 +44,6 @@ const FreelancerJobTabs = ({ applications }: any) => {
             },
         );
 
-
     };
 
     const filteredApplications = (status: string) => {

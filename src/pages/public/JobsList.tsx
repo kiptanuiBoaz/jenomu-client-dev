@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import Navbar from '../../components/Navbar';
 import JobsTabs from '../../components/JobTabs';
 import { Container, Grid, IconButton, Typography, useMediaQuery } from '@mui/material';
 import { Menu } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
-import { getUserInfoState } from '../../redux/slices/authSlice';
 import { useTheme } from '@mui/material/styles';
 import FilterDrawer from '../../components/FIlterDrawer';
 import FilteredJobs from '../../components/FilterdJobs';
@@ -87,6 +85,7 @@ export const JobsList = () => {
 
     if (isLoading) return <Typography>Loading...</Typography>;
     if (isError) return <Typography>Something went wrong</Typography>;
+    if (isError) console.log(isError);
 
     return (
         <>

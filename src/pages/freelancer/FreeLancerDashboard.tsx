@@ -1,4 +1,4 @@
-import { Container, Grid, Typography } from "@mui/material";
+import { Container, Grid, LinearProgress, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { baseGet } from "../../utils/apiClient";
 import { getUserInfoState } from "../../redux/slices/authSlice";
@@ -15,7 +15,7 @@ const FreelancerDashboard = () => {
     });
 
 
-    if (isLoading) return <Typography>Loading...</Typography>;
+    if (isLoading) return <LinearProgress color="primary" />;
     if (isError) return <Typography>Something went wrong</Typography>;
 
     console.log(data)
