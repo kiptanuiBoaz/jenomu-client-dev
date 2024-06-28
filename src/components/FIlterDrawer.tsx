@@ -8,16 +8,20 @@ import {
     Autocomplete,
     TextField,
     Checkbox,
+    Stack,
+    Button,
 } from '@mui/material';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { ExpandLess, ExpandMore, Label } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     setSortField, setDatePosted, setStartDate, setBudget, setJobType, setSkillsRequired,
-    selectFilterFields
+    selectFilterFields,
+    resetFilterFields
 } from '../redux/slices/filterSlice';
 import { useTheme } from '@mui/material/styles';
 import { top100SkillsInMedicalResearch } from '../utils/data';
-import { budgetOptions, datePostedOptions, jobTypeOptions, startDateOptions } from '../utils/filterOptions';
+import { MdOutlineFilterAltOff } from 'react-icons/md';
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -58,7 +62,7 @@ const FilterDrawer = ({ open, onClose }: any) => {
         dispatch(setStartDate(option));
     };
 
-    const handleBudgetChange = (option: string) => {
+    const handleBudgetChange = (option: number) => {
         dispatch(setBudget(option));
     };
 
@@ -70,9 +74,17 @@ const FilterDrawer = ({ open, onClose }: any) => {
         dispatch(setSkillsRequired(values));
     };
 
+
     const drawerContent = (
         <Box sx={{ width: 250, padding: 2 }}>
-            <Typography variant="h6">Filter</Typography>
+            <Stack direction={"row"} justifyContent={"space-between"}>
+                <Typography variant="h6">Filter</Typography>
+                <Button onClick={() => dispatch(resetFilterFields())} size="small" variant="outlined" startIcon={<FilterAltOffIcon />}>
+                    Clear
+                </Button>
+
+            </Stack>
+
             <List>
                 <ListItem>
                     <Select
@@ -109,16 +121,16 @@ const FilterDrawer = ({ open, onClose }: any) => {
                 <Collapse in={dateFilterOpen} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         {datePostedOptions.map((option) => (
-                            <ListItem key={option} button onClick={() => handleDatePostedChange(option)}>
+                            <ListItem key={option.value} button onClick={() => handleDatePostedChange(option.value)}>
                                 <ListItemIcon>
                                     <Radio
                                         edge="start"
-                                        checked={filterFields.datePosted === option}
+                                        checked={filterFields.datePosted === option.value}
                                         tabIndex={-1}
                                         disableRipple
                                     />
                                 </ListItemIcon>
-                                <ListItemText primary={option} />
+                                <ListItemText primary={option.label} />
                             </ListItem>
                         ))}
                     </List>
@@ -132,16 +144,16 @@ const FilterDrawer = ({ open, onClose }: any) => {
                 <Collapse in={statusFilterOpen} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         {startDateOptions.map((option) => (
-                            <ListItem key={option} button onClick={() => handleStartDateChange(option)}>
+                            <ListItem key={option.value} button onClick={() => handleStartDateChange(option.value)}>
                                 <ListItemIcon>
                                     <Radio
                                         edge="start"
-                                        checked={filterFields.startDate === option}
+                                        checked={filterFields.startDate === option.value}
                                         tabIndex={-1}
                                         disableRipple
                                     />
                                 </ListItemIcon>
-                                <ListItemText primary={option} />
+                                <ListItemText primary={option.label} />
                             </ListItem>
                         ))}
                     </List>
@@ -155,16 +167,16 @@ const FilterDrawer = ({ open, onClose }: any) => {
                 <Collapse in={budgetFilterOpen} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         {budgetOptions.map((option) => (
-                            <ListItem key={option} button onClick={() => handleBudgetChange(option)}>
+                            <ListItem key={option.value} button onClick={() => handleBudgetChange(option.value)}>
                                 <ListItemIcon>
                                     <Radio
                                         edge="start"
-                                        checked={filterFields.budget === option}
+                                        checked={filterFields.budget === option.value}
                                         tabIndex={-1}
                                         disableRipple
                                     />
                                 </ListItemIcon>
-                                <ListItemText primary={option} />
+                                <ListItemText primary={option.label} />
                             </ListItem>
                         ))}
                     </List>
@@ -178,16 +190,16 @@ const FilterDrawer = ({ open, onClose }: any) => {
                 <Collapse in={jobTypeFilterOpen} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         {jobTypeOptions.map((option) => (
-                            <ListItem key={option} button onClick={() => handleJobTypeChange(option)}>
+                            <ListItem key={option.value} button onClick={() => handleJobTypeChange(option.value)}>
                                 <ListItemIcon>
                                     <Radio
                                         edge="start"
-                                        checked={filterFields.jobType === option}
+                                        checked={filterFields.jobType === option.value}
                                         tabIndex={-1}
                                         disableRipple
                                     />
                                 </ListItemIcon>
-                                <ListItemText primary={option} />
+                                <ListItemText primary={option.Label} />
                             </ListItem>
                         ))}
                     </List>
@@ -242,3 +254,27 @@ const FilterDrawer = ({ open, onClose }: any) => {
 };
 
 export default FilterDrawer;
+
+const datePostedOptions = [
+    { label: "Today", value: new Date().toISOString() },
+    { label: "This Week", value: new Date(new Date().setDate(new Date().getDate() - 7)).toISOString() },
+    { label: "This Month", value: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString() },
+];
+
+const startDateOptions = [
+    { label: "Today", value: new Date().toISOString() },
+    { label: "Next Week", value: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString() },
+    { label: "Next Month", value: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString() },
+];
+
+const budgetOptions = [
+    { label: "Less than 100 dollars", value: 100 },
+    { label: "Between 100 and 1000 dollars", value: 1000 },
+    { label: "More than 1000 dollars", value: Infinity },
+];
+
+const jobTypeOptions = [
+    { Label: "Contract", value: "contract" },
+    { Label: "Long-term", value: "long-term" },
+    { Label: "Freelance", value: "freelance" }
+];

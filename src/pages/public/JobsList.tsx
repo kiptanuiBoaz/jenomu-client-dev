@@ -1,61 +1,70 @@
 import { useState } from 'react';
-import Navbar from '../../components/Navbar';
 import JobsTabs from '../../components/JobTabs';
 import { Container, Grid, IconButton, Typography, useMediaQuery } from '@mui/material';
 import { Menu } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
-import { getUserInfoState } from '../../redux/slices/authSlice';
 import { useTheme } from '@mui/material/styles';
 import FilterDrawer from '../../components/FIlterDrawer';
 import FilteredJobs from '../../components/FilterdJobs';
 import { useQuery } from '@tanstack/react-query';
 import { baseGet } from '../../utils/apiClient';
 import { selectFilterFields } from '../../redux/slices/filterSlice';
+import LoadingScreen from '../../components/Loading';
 
-const JobsList = () => {
+export const JobsList = () => {
     const [filterOpen, setFilterOpen] = useState(false);
-    const { isAuthenticated } = useSelector(getUserInfoState);
+    // const { isAuthenticated } = useSelector(getUserInfoState);
     const theme = useTheme();
     const isMediumScreen = useMediaQuery(theme.breakpoints.up('md'));
     const filterFields = useSelector(selectFilterFields);
+
+    //fetch all jobs
     const { data, isLoading, isError } = useQuery({
         queryFn: async () => await baseGet(`/v1/job/all/`),
         queryKey: ["jobs"],
     });
-    console.log(data)
+
     const handleToggleFilter = () => {
         setFilterOpen(!filterOpen);
     };
 
     const filterJobs = (jobs: any) => {
         return jobs.filter((job: any) => {
+            // Filter by date posted
+            if (filterFields.datePosted) {
+                const jobDate = new Date(job.created_at);
+                const filterDate = new Date(filterFields.datePosted);
+                if (jobDate < filterDate) {
+                    return false;
+                }
+            }
+
+            // Filter by start date
+            if (filterFields.startDate) {
+                const jobStartDate = new Date(job.start_date);
+                const filterStartDate = new Date(filterFields.startDate);
+                if (jobStartDate > filterStartDate) {
+                    return false;
+                }
+            }
 
             // Filter by job type
-            // if (filterFields.jobType && job.job_type !== filterFields.jobType) {
-            //     return false;
-            // }
-            // // Filter by budget
-            // if (filterFields.budget === 'Less than $100' && job.proposed_budget >= 100) {
-            //     return false;
-            // }
-            // if (filterFields.budget === '$100 - $1000' && (job.proposed_budget < 100 || job.proposed_budget > 1000)) {
-            //     return false;
-            // }
-            // if (filterFields.budget === 'More than $1000' && job.proposed_budget <= 1000) {
-            //     return false;
-            // }
-            // // Filter by statuses
-            // if (filterFields.selectedStatuses.length && !filterFields.selectedStatuses.includes(job.status)) {
-            //     return false;
-            // }
-            // // Filter by skills required
-            // if (filterFields.skillsRequired.length && !filterFields.skillsRequired.every(skill => job.skills_required.includes(skill))) {
-            //     return false;
-            // }
-            // // Filter by search term
-            // if (filterFields.searchTerm && !job.name.toLowerCase().includes(filterFields.searchTerm.toLowerCase())) {
-            //     return false;
-            // }
+            if (filterFields.jobType && job.job_type !== filterFields.jobType) {
+                return false;
+            }
+            // Filter by budget
+            if (filterFields.budget && job.proposed_budget <= filterFields.budget) {
+                return false;
+            }
+
+            // Filter by skills required
+            if (filterFields.skillsRequired.length && !filterFields.skillsRequired.every(skill => job.skills_required.includes(skill))) {
+                return false;
+            }
+            // Filter by search term
+            if (filterFields.searchTerm && !job.name.toLowerCase().includes(filterFields.searchTerm.toLowerCase())) {
+                return false;
+            }
             return true;
         });
     };
@@ -75,8 +84,9 @@ const JobsList = () => {
 
     const filteredJobs = data ? sortJobs(filterJobs(data)) : [];
 
-    if (isLoading) return <Typography>Loading...</Typography>;
+    if (isLoading) return <LoadingScreen />;
     if (isError) return <Typography>Something went wrong</Typography>;
+    if (isError) console.log(isError);
 
     return (
         <>

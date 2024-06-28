@@ -1,4 +1,4 @@
-import { Avatar, Box, Checkbox, Container, CssBaseline, FormControlLabel, FormLabel, Grid, Link, TextField, Typography } from '@mui/material';
+import { Avatar, Box, Checkbox, Container, CssBaseline, FormControlLabel, FormLabel, Grid, IconButton, InputAdornment, Link, OutlinedInput, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useFormik } from 'formik';
@@ -8,11 +8,19 @@ import { useState } from 'react';
 import { LoadingButton } from '@mui/lab';
 import { useDispatch } from 'react-redux';
 import { login } from '../../redux/slices/authSlice';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Login = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [errorMsg, setErrorMsg] = useState(null);
+
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -91,20 +99,32 @@ const Login = () => {
                         error={formik.touched.email && Boolean(formik.errors.email)}
                         helperText={formik.touched.email && formik.errors.email}
                     />
-                    <TextField
-                        margin="normal"
+                    <OutlinedInput
                         required
                         fullWidth
                         name="password"
                         label="Password"
-                        type="password"
                         id="password"
                         autoComplete="current-password"
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         value={formik.values.password}
                         error={formik.touched.password && Boolean(formik.errors.password)}
-                        helperText={formik.touched.password && formik.errors.password}
+                        placeholder="Password"
+                        // helperText={formik.touched.password && formik.errors.password}
+                        type={showPassword ? 'text' : 'password'}
+                        endAdornment={
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={handleClickShowPassword}
+                                    onMouseDown={handleMouseDownPassword}
+                                    edge="end"
+                                >
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        }
                     />
                     <FormControlLabel
                         control={<Checkbox value="remember" color="primary" />}

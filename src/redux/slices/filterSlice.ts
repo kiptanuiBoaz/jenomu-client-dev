@@ -2,10 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface FilterState {
     sortField: string;
-    selectedStatuses: string[];
     datePosted: string;
     startDate: string;
-    budget: string;
+    budget: number;
     jobType: string;
     skillsRequired: string[];
     jobTabs: number;
@@ -13,11 +12,11 @@ interface FilterState {
 }
 
 const initialState: FilterState = {
-    sortField: 'ascending',
-    selectedStatuses: [],
+    sortField: '',
+
     datePosted: '',
     startDate: 'In the next week',
-    budget: 'Less than $100',
+    budget: 0,
     jobType: '',
     skillsRequired: [],
     jobTabs: 0,
@@ -31,16 +30,13 @@ const filterSlice = createSlice({
         setSortField(state, action: PayloadAction<string>) {
             state.sortField = action.payload;
         },
-        setSelectedStatuses(state, action: PayloadAction<string[]>) {
-            state.selectedStatuses = action.payload;
-        },
         setDatePosted(state, action: PayloadAction<string>) {
             state.datePosted = action.payload;
         },
         setStartDate(state, action: PayloadAction<string>) {
             state.startDate = action.payload;
         },
-        setBudget(state, action: PayloadAction<string>) {
+        setBudget(state, action: PayloadAction<number>) {
             state.budget = action.payload;
         },
         setJobType(state, action: PayloadAction<string>) {
@@ -65,7 +61,6 @@ const filterSlice = createSlice({
 
 export const {
     setSortField,
-    setSelectedStatuses,
     setDatePosted,
     setStartDate,
     setBudget,

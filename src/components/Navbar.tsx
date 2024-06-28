@@ -16,7 +16,7 @@ import { RootState } from '../redux/store/store';
 
 
 
-const Navbar = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
+export const Navbar = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
     const theme = useTheme();
     const navigate = useNavigate();
 
@@ -41,6 +41,8 @@ const Navbar = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
 
     const { user } = useSelector(getUserInfoState);
     const location = useLocation();
+
+    const role_guid = user?.user?.role?.guid
 
     // List of paths where the navbar should be hidden
     const authPaths = ['/login', '/enter-code', '/set-new-password', '/reset-password', '/create-account'];
@@ -82,10 +84,18 @@ const Navbar = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                         horizontal: 'left',
                     }}
                 >
-                    <MenuItem onClick={() => navigate("/researcher/post-job")}>Cretate New</MenuItem>
-                    <MenuItem onClick={() => navigate("/researcher/")}>View Jobs</MenuItem>
-                    <MenuItem onClick={() => navigate("/freelancer/")}>View Applications</MenuItem>
+                    {
+                        role_guid === "2f4aa31b-0fd1-4099-a263-23e2571f07d2" &&
+                        <MenuItem onClick={() => navigate("/freelancer/")}>View Applications</MenuItem>
+                    }
+                    <MenuItem onClick={() => navigate("/admin/")}>Admin</MenuItem>
+                    {role_guid === "fc651bc8-20c4-4814-950d-481aae85bba2" && [
+                        <MenuItem key="new" onClick={() => navigate("/researcher/post-job")}>Cretate New</MenuItem>,
+                        <MenuItem key="all" onClick={() => navigate("/researcher/")}>My Job postings</MenuItem>
+                    ]}
+
                 </Menu>
+
 
 
 
